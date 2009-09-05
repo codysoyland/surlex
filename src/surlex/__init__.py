@@ -1,7 +1,7 @@
 from io import StringIO
 import re
 
-class SurlexParser(object):
+class Surlex(object):
     def __init__(self, surlex):
         self.surlex = surlex
         self.io = StringIO(self.surlex)
@@ -21,7 +21,7 @@ class SurlexParser(object):
                 output += c
         return output
 
-    def parse_capture(self, capture):
+    def translate_capture(self, capture):
         pieces = capture.split(':')
         if len(pieces) == 2:
             regex = pieces[1]
@@ -30,14 +30,14 @@ class SurlexParser(object):
         key = pieces[0]
         return '(?P<%s>%s)' % (key, regex)
 
-    def parse(self):
+    def translate(self):
         while True:
             c = self.read(1)
             if c == '':
                 raise StopIteration
             elif c == '<':
                 capture = self.read_until('>')
-                yield self.parse_capture(capture)
+                yield self.translate_capture(capture)
             elif c == '\\':
                 yield self.read(1)
             elif c == '*':
@@ -51,10 +51,10 @@ class SurlexParser(object):
             else:
                 yield c
     def to_regex(self):
-        return ''.join(self.parse())
+        return ''.join(self.translate())
 
 def surlex_to_regex(surlex):
-    surlex = SurlexParser(surlex)
+    surlex = Surlex(surlex)
     return surlex.to_regex()
 
 def match(surlex, subject):
