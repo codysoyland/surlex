@@ -35,21 +35,29 @@ class Surlex(object):
         while True:
             c = self.read(1)
             if c == '':
+                # end of surlex
                 break
+            elif c == '\\':
+                # escape with backslash
+                output += self.read(1)
             elif c == '<':
+                # hit capture, read to end of capture and translate
                 capture = self.read_until('>')
                 output += self.translate_capture(capture)
-            elif c == '\\':
-                output += self.read(1)
             elif c == '*':
+                # wildcard, output .*
                 output += '.*'
             elif c == ')':
+                # surlex optional match, convert to regex ()?
                 output += ')?'
             elif c == '{':
+                # literal regex inside {}
                 output += self.read_until('}')
             elif c in ('.'):
+                # output regex needs to escape "." as to not match everything
                 output += '\\' + c
             else:
+                # literal output (such as "/")
                 output += c
         return output
 
