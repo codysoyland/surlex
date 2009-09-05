@@ -25,6 +25,9 @@ class Surlex(object):
         pieces = capture.split(':')
         if len(pieces) == 2:
             regex = pieces[1]
+            if pieces[0] == '':
+                # no key provided, assume no capture, just literal regex
+                return regex
         else:
             regex = '.+'
         key = pieces[0]
@@ -50,9 +53,6 @@ class Surlex(object):
             elif c == ')':
                 # surlex optional match, convert to regex ()?
                 output += ')?'
-            elif c == '{':
-                # literal regex inside {}
-                output += self.read_until('}')
             elif c in ('.'):
                 # output regex needs to escape "." as to not match everything
                 output += '\\' + c

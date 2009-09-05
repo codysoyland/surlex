@@ -9,7 +9,7 @@ class TestSurlex(unittest.TestCase):
             ('/<product>/<option>.html', '/(?P<product>.+)/(?P<option>.+)\.html'),
             ('/<product>/<option>.*', '/(?P<product>.+)/(?P<option>.+)\..*'),
             ('/things/edit/<slug>', '/things/edit/(?P<slug>.+)'),
-            ('/real/regex/{.*$}', '/real/regex/.*$'),
+            ('/real/regex/<:.*$>', '/real/regex/.*$'),
             ('/(checkout/)login', '/(checkout/)?login'),
         )
 
@@ -43,7 +43,7 @@ class TestSurlex(unittest.TestCase):
         self.assertEqual(surl(surlex), regex)
 
     def test_regex(self):
-        surlex = '/anything/{.*$}'
+        surlex = '/anything/<:.*$>'
         regex = '/anything/.*$'
         self.assertEqual(surl(surlex), regex)
 
