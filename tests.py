@@ -1,5 +1,5 @@
 import unittest
-from surl import surlex_to_regex as surl, match
+from surlex import surlex_to_regex as surl, match
 import re
 
 class TestSurlex(unittest.TestCase):
