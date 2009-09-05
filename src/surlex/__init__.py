@@ -28,9 +28,6 @@ class SurlexParser(object):
         else:
             regex = '.+'
         key = pieces[0]
-        if key[0] == '#':
-            key = key[1:]
-            regex = '[0-9]+'
         return '(?P<%s>%s)' % (key, regex)
 
     def parse(self):

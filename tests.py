@@ -8,7 +8,6 @@ class TestSurlex(unittest.TestCase):
         self.matches = (
             ('/<product>/<option>.html', '/(?P<product>.+)/(?P<option>.+)\.html'),
             ('/<product>/<option>.*', '/(?P<product>.+)/(?P<option>.+)\..*'),
-            ('/things/edit/(<#id>/)', '/things/edit/((?P<id>[0-9]+)/)?'),
             ('/things/edit/<slug>', '/things/edit/(?P<slug>.+)'),
             ('/real/regex/{.*$}', '/real/regex/.*$'),
             ('/(checkout/)login', '/(checkout/)?login'),
@@ -33,19 +32,9 @@ class TestSurlex(unittest.TestCase):
         regex = '/(?P<var>[0-9]*)/'
         self.assertEqual(surl(surlex), regex)
 
-    def test_number_capture1(self):
-        surlex = '/things/<#id>/'
-        regex = '/things/(?P<id>[0-9]+)/'
-        self.assertEqual(surl(surlex), regex)
-
     def test_optional(self):
         surlex = '/things/(<slug>/)'
         regex = '/things/((?P<slug>.+)/)?'
-        self.assertEqual(surl(surlex), regex)
-
-    def test_number_capture2(self):
-        surlex = '/things/(<#id>/)'
-        regex = '/things/((?P<id>[0-9]+)/)?'
         self.assertEqual(surl(surlex), regex)
 
     def test_wildcard(self):
@@ -59,7 +48,7 @@ class TestSurlex(unittest.TestCase):
         self.assertEqual(surl(surlex), regex)
 
     def test_match(self):
-        surlex = '/articles/<#year>/<slug>/'
+        surlex = '/articles/<year>/<slug>/'
         subject = '/articles/2008/this-article/'
         m = match(surlex, subject)
         self.assertEqual(m['year'], '2008')
