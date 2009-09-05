@@ -31,27 +31,30 @@ class Surlex(object):
         return '(?P<%s>%s)' % (key, regex)
 
     def translate(self):
+        output = ''
         while True:
             c = self.read(1)
             if c == '':
-                raise StopIteration
+                break
             elif c == '<':
                 capture = self.read_until('>')
-                yield self.translate_capture(capture)
+                output += self.translate_capture(capture)
             elif c == '\\':
-                yield self.read(1)
+                output += self.read(1)
             elif c == '*':
-                yield '.*'
+                output += '.*'
             elif c == ')':
-                yield ')?'
+                output += ')?'
             elif c == '{':
-                yield self.read_until('}')
+                output += self.read_until('}')
             elif c in ('.'):
-                yield '\\' + c
+                output += '\\' + c
             else:
-                yield c
-    def to_regex(self):
-        return ''.join(self.translate())
+                output += c
+        return output
+
+    #alias to translate
+    to_regex = translate
 
 def surlex_to_regex(surlex):
     surlex = Surlex(surlex)
