@@ -1,7 +1,7 @@
 from io import StringIO
 import re
 
-class SurlParser(object):
+class SurlexParser(object):
     def __init__(self, surlex):
         self.surlex = surlex
         self.io = StringIO(self.surlex)
@@ -56,12 +56,12 @@ class SurlParser(object):
     def to_regex(self):
         return ''.join(self.parse())
 
-def surl_to_re(surlex):
-    surl = SurlParser(surlex)
-    return surl.to_regex()
+def surlex_to_regex(surlex):
+    surlex = SurlexParser(surlex)
+    return surlex.to_regex()
 
 def match(surlex, subject):
-    regex = surl_to_re(surlex)
+    regex = surlex_to_regex(surlex)
     m = re.match(regex, subject)
     if m:
         return m.groupdict()

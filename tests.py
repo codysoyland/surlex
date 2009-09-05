@@ -1,8 +1,8 @@
 import unittest
-from surl import surl_to_re as surl, match
+from surl import surlex_to_regex as surl, match
 import re
 
-class TestSurl(unittest.TestCase):
+class TestSurlex(unittest.TestCase):
     def setUp(self):
         # matches are pairs of surl expressions and the regex equivalent
         self.matches = (
