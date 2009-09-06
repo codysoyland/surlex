@@ -36,7 +36,11 @@ class Surlex(object):
             if c == char:
                 return output
             elif c == '\\':
-                output += self.read(1)
+                next = self.read(1)
+                if next == char:
+                    output += next
+                else:
+                    output += '\\' + next
             else:
                 output += c
         return output
