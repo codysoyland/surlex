@@ -9,7 +9,7 @@ class TestSurlex(unittest.TestCase):
             ('/<product>/<option>.html', '/(?P<product>.+)/(?P<option>.+)\.html'),
             ('/<product>/<option>.*', '/(?P<product>.+)/(?P<option>.+)\..*'),
             ('/things/edit/<slug>', '/things/edit/(?P<slug>.+)'),
-            ('/real/regex/<:.*$>', '/real/regex/.*$'),
+            ('/real/regex/<=.*$>', '/real/regex/.*$'),
             ('/(checkout/)login', '/(checkout/)?login'),
         )
 
@@ -28,23 +28,23 @@ class TestSurlex(unittest.TestCase):
         self.assertEqual(surl(surlex), regex)
 
     def test_macro(self):
-        surlex = '/year/<=Y>.html'
+        surlex = '/year/<:Y>.html'
         regex = '/year/\d{4}\.html'
         self.assertEqual(surl(surlex), regex)
 
     def test_macro_capture(self):
-        surlex = '/blog/<year=Y>.html'
+        surlex = '/blog/<year:Y>.html'
         regex = '/blog/(?P<year>\d{4})\.html'
         self.assertEqual(surl(surlex), regex)
 
     def test_custom_macro(self):
         register_macro('B', 'bar')
-        surlex = '/foo/<=B>/'
+        surlex = '/foo/<:B>/'
         regex = '/foo/bar/'
         self.assertEqual(surl(surlex), regex)
 
     def test_regex_capture(self):
-        surlex = '/<var:[0-9]*>/'
+        surlex = '/<var=[0-9]*>/'
         regex = '/(?P<var>[0-9]*)/'
         self.assertEqual(surl(surlex), regex)
 
@@ -59,7 +59,7 @@ class TestSurlex(unittest.TestCase):
         self.assertEqual(surl(surlex), regex)
 
     def test_regex(self):
-        surlex = '/anything/<:.*$>'
+        surlex = '/anything/<=.*$>'
         regex = '/anything/.*$'
         self.assertEqual(surl(surlex), regex)
 

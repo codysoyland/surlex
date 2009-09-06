@@ -39,12 +39,12 @@ class Surlex(object):
             raise Exception('Macro "%s" not defined' % macro)
 
     def translate_capture(self, capture):
-        pieces = capture.split(':')
+        pieces = capture.split('=')
         if len(pieces) == 2:
             # regex match
             regex = pieces[1]
         else:
-            pieces = capture.split('=')
+            pieces = capture.split(':')
             if len(pieces) == 2:
                 # macro match
                 macro = pieces[1]
