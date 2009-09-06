@@ -23,6 +23,7 @@ register_macro('s', r'[\w-]+') # slug
 
 class Surlex(object):
     def __init__(self, surlex):
+        self.translated = False
         self.surlex = surlex
         self.io = StringIO(self.surlex)
 
@@ -100,16 +101,22 @@ class Surlex(object):
             else:
                 # literal output (such as "/")
                 output += c
+        self.regex = output
+        self.translated = True
         return output
 
     #alias to translate
     to_regex = translate
 
+    def match(self, subject):
+        if not self.translated:
+            self.translate()
+        m = re.match(self.regex, subject)
+        if m:
+            return m.groupdict()
+
 def surlex_to_regex(surlex):
     return Surlex(surlex).translate()
 
 def match(surlex, subject):
-    regex = surlex_to_regex(surlex)
-    m = re.match(regex, subject)
-    if m:
-        return m.groupdict()
+    return Surlex(surlex).match(subject)
