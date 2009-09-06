@@ -9,8 +9,17 @@ class MacroRegistry(object):
     def register(cls, macro, regex):
         cls.macros[macro] = regex
 
+
+# todo: make regexes more restrictive
+# (ie: 'm' should only match months 1-12. currently, it matches 0-99)
 register_macro = MacroRegistry.register
-register_macro('Y', '\\d{4}')
+register_macro('Y', r'\d{4}') # year, including century
+register_macro('y', r'\d{2}') # year, not including century
+register_macro('M', r'(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)') # month, abbreviated
+register_macro('m', r'\d{1,2}') # month, 1 or 2 digit
+register_macro('d', r'\d{1,2}') # day, 1 or 2 digit
+register_macro('#', r'\d+') # number, any length
+register_macro('s', r'[\w-]+') # slug
 
 class Surlex(object):
     def __init__(self, surlex):
