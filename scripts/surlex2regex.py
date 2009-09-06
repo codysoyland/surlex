@@ -10,7 +10,7 @@ def main():
         argv = ['-h']
     else:
         argv = sys.argv[1:]
-    options, args = parser.parse_args(argv) 
+    options, args = parser.parse_args(argv)
     print Surlex(args[0]).translate()
 
 if __name__ == '__main__':
