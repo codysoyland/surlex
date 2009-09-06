@@ -63,6 +63,16 @@ class TestSurlex(unittest.TestCase):
         regex = '/anything/.*$'
         self.assertEqual(surl(surlex), regex)
 
+    def test_regex2(self):
+        surlex = '/<=\\\\d{5}$>'
+        regex = '/\\d{5}$'
+        self.assertEqual(surl(surlex), regex)
+
+    def test_regex3(self):
+        surlex = '<=\>>'
+        regex = '>'
+        self.assertEqual(surl(surlex), regex)
+
     def test_match(self):
         surlex = '/articles/<year>/<slug>/'
         subject = '/articles/2008/this-article/'
