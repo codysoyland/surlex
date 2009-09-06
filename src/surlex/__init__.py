@@ -91,8 +91,7 @@ class Surlex(object):
     to_regex = translate
 
 def surlex_to_regex(surlex):
-    surlex = Surlex(surlex)
-    return surlex.to_regex()
+    return Surlex(surlex).translate()
 
 def match(surlex, subject):
     regex = surlex_to_regex(surlex)

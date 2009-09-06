@@ -64,8 +64,8 @@ class TestSurlex(unittest.TestCase):
         self.assertEqual(surl(surlex), regex)
 
     def test_regex2(self):
-        surlex = '/<=\\\\d{5}$>'
-        regex = '/\\d{5}$'
+        surlex = r'/<=\\d{5}$>'
+        regex = r'/\d{5}$'
         self.assertEqual(surl(surlex), regex)
 
     def test_regex3(self):
