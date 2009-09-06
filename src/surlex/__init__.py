@@ -32,7 +32,7 @@ class Surlex(object):
     def read_until(self, char):
         output = ''
         while 1:
-            c = self.read(len(char))
+            c = self.read(1)
             if c == char:
                 return output
             elif c == '\\':
@@ -48,20 +48,22 @@ class Surlex(object):
             raise Exception('Macro "%s" not defined' % macro)
 
     def translate_capture(self, capture):
-        pieces = capture.split('=')
-        if len(pieces) == 2:
-            # regex match
-            regex = pieces[1]
-        else:
-            pieces = capture.split(':')
-            if len(pieces) == 2:
+        capture_io = StringIO(capture)
+        key = ''
+        # if no regex or macro is provided, default to match anything (.+)
+        regex = '.+'
+        while True:
+            char = capture_io.read(1)
+            if char == '': break
+            elif char == ':':
                 # macro match
-                macro = pieces[1]
+                macro = capture_io.read()
                 regex = self.resolve_macro(macro)
+            elif char == '=':
+                # regex match
+                regex = capture_io.read()
             else:
-                # no regex or macro provided, default to match anything (.+)
-                regex = '.+'
-        key = pieces[0]
+                key += char
         if key == '':
             # no key provided, assume no capture, just literal regex
             return regex
