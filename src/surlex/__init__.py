@@ -42,6 +42,8 @@ class Surlex(object):
                     output += next
                 else:
                     output += '\\' + next
+            elif c == '':
+                raise Exception('Malformed surlex. Expected %s.' % char)
             else:
                 output += c
         return output
