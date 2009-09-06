@@ -1,5 +1,5 @@
 import unittest
-from surlex import surlex_to_regex as surl, match
+from surlex import surlex_to_regex as surl, match, register_macro
 import re
 
 class TestSurlex(unittest.TestCase):
@@ -25,6 +25,22 @@ class TestSurlex(unittest.TestCase):
     def test_basic_capture2(self):
         surlex = '/<product>/<option>.html'
         regex = '/(?P<product>.+)/(?P<option>.+)\.html'
+        self.assertEqual(surl(surlex), regex)
+
+    def test_macro(self):
+        surlex = '/year/<=Y>.html'
+        regex = '/year/\d{4}\.html'
+        self.assertEqual(surl(surlex), regex)
+
+    def test_macro_capture(self):
+        surlex = '/blog/<year=Y>.html'
+        regex = '/blog/(?P<year>\d{4})\.html'
+        self.assertEqual(surl(surlex), regex)
+
+    def test_custom_macro(self):
+        register_macro('B', 'bar')
+        surlex = '/foo/<=B>/'
+        regex = '/foo/bar/'
         self.assertEqual(surl(surlex), regex)
 
     def test_regex_capture(self):

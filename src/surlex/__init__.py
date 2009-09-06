@@ -1,6 +1,17 @@
 from io import StringIO
 import re
 
+class MacroRegistry(object):
+    # registering to the class makes the registry global
+    # maybe we'll change this in the future
+    macros = {}
+    @classmethod
+    def register(cls, macro, regex):
+        cls.macros[macro] = regex
+
+register_macro = MacroRegistry.register
+register_macro('Y', '\\d{4}')
+
 class Surlex(object):
     def __init__(self, surlex):
         self.surlex = surlex
@@ -21,17 +32,32 @@ class Surlex(object):
                 output += c
         return output
 
+    def resolve_macro(self, macro):
+        try:
+            return MacroRegistry.macros[macro]
+        except KeyError:
+            raise Exception('Macro "%s" not defined' % macro)
+
     def translate_capture(self, capture):
         pieces = capture.split(':')
         if len(pieces) == 2:
+            # regex match
             regex = pieces[1]
-            if pieces[0] == '':
-                # no key provided, assume no capture, just literal regex
-                return regex
         else:
-            regex = '.+'
+            pieces = capture.split('=')
+            if len(pieces) == 2:
+                # macro match
+                macro = pieces[1]
+                regex = self.resolve_macro(macro)
+            else:
+                # no regex or macro provided, default to match anything (.+)
+                regex = '.+'
         key = pieces[0]
-        return '(?P<%s>%s)' % (key, regex)
+        if key == '':
+            # no key provided, assume no capture, just literal regex
+            return regex
+        else:
+            return '(?P<%s>%s)' % (key, regex)
 
     def translate(self):
         output = ''
