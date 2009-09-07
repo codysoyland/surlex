@@ -97,8 +97,8 @@ class Surlex(object):
             elif c == ')':
                 # surlex optional match, convert to regex ()?
                 output += ')?'
-            elif c in ('.'):
-                # output regex needs to escape "." as to not match everything
+            elif c in '[]{}.+|?':
+                # output regex needs to escape regex metacharacters
                 output += '\\' + c
             else:
                 # literal output (such as "/")
