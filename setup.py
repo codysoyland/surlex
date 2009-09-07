@@ -11,6 +11,7 @@ setup(
     scripts = ['scripts/surlex2regex.py'],
     author = 'Cody Soyland',
     author_email = 'codysoyland@gmail.com',
+    license = 'BSD',
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
