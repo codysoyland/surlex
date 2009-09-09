@@ -1,0 +1,7 @@
+Surlex (Simple URL Expression) is a language for matching and extracting text, similar to regex (regular expression). It works by generating a regular expression from a more concise syntax that is designed to produce easy-to-read url patterns.
+
+There is no real documentation yet, but there is a blog post that covers all of it's features available at:
+http://codysoyland.com/blog/2009/sep/6/introduction-surlex/
+
+Installation:
+python setup.py install
