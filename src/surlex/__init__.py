@@ -1,4 +1,9 @@
-from io import StringIO
+try:
+    # post 2.4
+    from io import StringIO
+except ImportError:
+    # for 2.4
+    from StringIO import StringIO
 import re
 
 class MacroRegistry(object):
@@ -26,6 +31,7 @@ class Surlex(object):
         self.translated = False
         self.surlex = surlex
         self.io = StringIO(self.surlex)
+        self.groupmacros = {}
 
     def read(self, count):
         return self.io.read(count)
@@ -50,7 +56,7 @@ class Surlex(object):
 
     def resolve_macro(self, macro):
         try:
-            return MacroRegistry.macros[macro]
+            return (macro, MacroRegistry.macros[macro])
         except KeyError:
             raise Exception('Macro "%s" not defined' % macro)
 
@@ -65,7 +71,8 @@ class Surlex(object):
             elif char == ':':
                 # macro match
                 macro = capture_io.read()
-                regex = self.resolve_macro(macro)
+                macro_name, regex = self.resolve_macro(macro)
+                self.groupmacros[key] = macro_name
             elif char == '=':
                 # regex match
                 regex = capture_io.read()
@@ -119,6 +126,11 @@ class Surlex(object):
 
 def surlex_to_regex(surlex):
     return Surlex(surlex).translate()
+
+def parsed_surlex_object(surlex):
+    object = Surlex(surlex)
+    object.translate()
+    return object
 
 def match(surlex, subject):
     return Surlex(surlex).match(subject)
