@@ -1,10 +1,9 @@
 try:
-    # post 2.4
     from io import StringIO
 except ImportError:
-    # for 2.4
     from StringIO import StringIO
 import re
+from exceptions import MalformedSurlex, MacroDoesNotExist
 
 class MacroRegistry(object):
     # registering to the class makes the registry global
@@ -49,7 +48,7 @@ class Surlex(object):
                 else:
                     output += '\\' + next
             elif c == '':
-                raise Exception('Malformed surlex. Expected %s.' % char)
+                raise MalformedSurlex('Malformed surlex. Expected %s.' % char)
             else:
                 output += c
         return output
@@ -58,7 +57,7 @@ class Surlex(object):
         try:
             return (macro, MacroRegistry.macros[macro])
         except KeyError:
-            raise Exception('Macro "%s" not defined' % macro)
+            raise MacroDoesNotExist('Macro "%s" not defined' % macro)
 
     def translate_capture(self, capture):
         capture_io = StringIO(capture)

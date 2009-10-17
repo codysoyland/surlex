@@ -1,5 +1,6 @@
 import unittest
 from surlex import surlex_to_regex as surl, match, register_macro, parsed_surlex_object
+from surlex.exceptions import MalformedSurlex, MacroDoesNotExist
 import re
 
 class TestSurlex(unittest.TestCase):
@@ -73,11 +74,17 @@ class TestSurlex(unittest.TestCase):
         regex = '>'
         self.assertEqual(surl(surlex), regex)
 
+    def test_parse_fail(self):
+        surlex = '<asdf'
+        self.assertRaises(MalformedSurlex, surl, surlex)
+
+    def test_macro_lookup_fail(self):
+        self.assertRaises(MacroDoesNotExist, surl, '<year:UNKNOWN>')
+
     def test_groupmacros(self):
         known_macro = parsed_surlex_object('<year:Y>')
         unnamed_macro = parsed_surlex_object('<:Y>')
         self.assertEqual(known_macro.groupmacros['year'], 'Y')
-        self.assertRaises(Exception, parsed_surlex_object, '<year:UNKNOWN>')
         self.assertEqual(unnamed_macro.groupmacros[''], 'Y')
 
     def test_match(self):
