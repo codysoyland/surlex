@@ -1,5 +1,5 @@
 import unittest
-from surlex import surlex_to_regex as surl, match, register_macro, parsed_surlex_object
+from surlex import surlex_to_regex as surl, match, register_macro, parsed_surlex_object, Surlex, MacroRegistry
 from surlex.exceptions import MalformedSurlex, MacroDoesNotExist
 import re
 
@@ -43,6 +43,11 @@ class TestSurlex(unittest.TestCase):
         surlex = '/foo/<:B>/'
         regex = '/foo/bar/'
         self.assertEqual(surl(surlex), regex)
+
+    def test_custom_macro2(self):
+        registry = MacroRegistry({'int': r'[0-9]'})
+        surlex = Surlex('/<foo:int>/', registry)
+        self.assertEqual(surlex.translate(), '/(?P<foo>[0-9])/')
 
     def test_regex_capture(self):
         surlex = '/<var=[0-9]*>/'
