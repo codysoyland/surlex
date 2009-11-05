@@ -2,10 +2,10 @@ from distutils.core import setup
 
 setup(
     name = 'surlex',
-    version = '0.1.0',
-    description = 'Simple URL expression translater: alternative to regular expressions for URL pattern matching and data extraction.',
+    version = '0.1.1',
+    description = 'Simple URL expression translator: alternative to regular expressions for URL pattern matching and data extraction.',
     url = 'http://github.com/codysoyland/surlex/tree/master',
-    download_url = 'http://cloud.github.com/downloads/codysoyland/surlex/surlex-0.1.0.tar.gz',
+    download_url = 'http://cloud.github.com/downloads/codysoyland/surlex/surlex-0.1.1.tar.gz',
     packages = ['surlex'],
     package_dir = {'surlex': 'src/surlex'},
     scripts = ['scripts/surlex2regex.py'],
