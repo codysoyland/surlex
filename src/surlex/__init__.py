@@ -84,7 +84,7 @@ class Surlex(object):
         return output
 
     def resolve_macro(self, macro):
-        return (macro, self.macro_registry.get(macro))
+        return self.macro_registry.get(macro)
 
     def translate_capture(self, capture):
         capture_io = StringIO(capture)
@@ -97,8 +97,8 @@ class Surlex(object):
             elif char == ':':
                 # macro match
                 macro = capture_io.read()
-                macro_name, regex = self.resolve_macro(macro)
-                self.groupmacros[key] = macro_name
+                regex = self.resolve_macro(macro)
+                self.groupmacros[key] = macro
             elif char == '=':
                 # regex match
                 regex = capture_io.read()
