@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name = 'surlex',
@@ -10,6 +10,7 @@ setup(
     package_dir = {'surlex': 'src/surlex'},
     scripts = ['scripts/surlex2regex.py'],
     author = 'Cody Soyland',
+    test_suite = 'tests',
     author_email = 'codysoyland@gmail.com',
     license = 'BSD',
     classifiers = [

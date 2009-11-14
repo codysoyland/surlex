@@ -98,3 +98,6 @@ class TestSurlex(unittest.TestCase):
         m = match(surlex, subject)
         self.assertEqual(m['year'], '2008')
         self.assertEqual(m['slug'], 'this-article')
+
+if __name__ == '__main__':
+    unittest.main()
