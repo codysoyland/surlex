@@ -52,7 +52,7 @@ class TagNode(Node):
     def __repr__(self):
         return '<TagNode: %s>' % self.name
 
-class RegexTagNode(Node):
+class RegexTagNode(TagNode):
     def __init__(self, name, regex):
         self.name = name
         self.regex = regex
@@ -63,9 +63,9 @@ class RegexTagNode(Node):
                 self.regex == other.regex)
 
     def __repr__(self):
-        return '<RegexTagNode %s: %s' % (self.name, self.regex)
+        return '<RegexTagNode %s: %s>' % (self.name, self.regex)
 
-class MacroTagNode(Node):
+class MacroTagNode(TagNode):
     def __init__(self, name, macro):
         self.name = name
         self.macro = macro
@@ -76,17 +76,15 @@ class MacroTagNode(Node):
                 self.macro == other.macro)
 
     def __repr__(self):
-        return '<MacroTagNode %s: %s' % (self.name, self.macro)
+        return '<MacroTagNode %s: %s>' % (self.name, self.macro)
 
 class Parser(object):
     def __init__(self, surlex):
         self.surlex = surlex
-        #self.chars = list(surlex) # make this generator
         self.chars = (char for char in surlex)
 
     def get_node_list(self):
         return list(self.parse(self.chars))
-        #return [TextNode('test')]
 
     def read_until(self, chars, char):
         try:
@@ -152,99 +150,37 @@ class Parser(object):
         if token:
             yield TextNode(token)
 
-class Surlex(object):
-    def __init__(self, surlex, macro_registry=DefaultMacroRegistry()):
-        self.translated = False
-        self.surlex = surlex
+class RegexScribe(object):
+    def __init__(self, node_list, macro_registry=DefaultMacroRegistry()):
+        self.node_list = node_list
         self.macro_registry = macro_registry
-        self.io = StringIO(self.surlex)
-        self.groupmacros = {}
-
-    def read(self, count):
-        return self.io.read(count)
-
-    def read_until(self, char):
-        output = ''
-        while 1:
-            c = self.read(1)
-            if c == char:
-                return output
-            elif c == '\\':
-                next = self.read(1)
-                if next == char:
-                    output += next
-                else:
-                    output += '\\' + next
-            elif c == '':
-                raise MalformedSurlex('Malformed surlex. Expected %s.' % char)
-            else:
-                output += c
-        return output
-
-    def resolve_macro(self, macro):
-        return self.macro_registry.get(macro)
-
-    def translate_capture(self, capture):
-        capture_io = StringIO(capture)
-        key = ''
-        # if no regex or macro is provided, default to match anything (.+)
-        regex = '.+'
-        while True:
-            char = capture_io.read(1)
-            if char == '': break
-            elif char == ':':
-                # macro match
-                macro = capture_io.read()
-                regex = self.resolve_macro(macro)
-                self.groupmacros[key] = macro
-            elif char == '=':
-                # regex match
-                regex = capture_io.read()
-            else:
-                key += char
-        if key == '':
-            # no key provided, assume no capture, just literal regex
-            return regex
-        else:
-            return '(?P<%s>%s)' % (key, regex)
 
     def translate(self):
         output = ''
-        while True:
-            c = self.read(1)
-            if c == '':
-                # end of surlex
-                break
-            elif c == '\\':
-                # escape with backslash
-                output += self.read(1)
-            elif c == '<':
-                # hit capture, read to end of capture and translate
-                capture = self.read_until('>')
-                output += self.translate_capture(capture)
-            elif c == '*':
-                # wildcard, output .*
+        for node in self.node_list:
+            if isinstance(node, TextNode):
+                output += node.token.replace('.', '\.')
+            elif isinstance(node, WildcardNode):
                 output += '.*'
-            elif c == ')':
-                # surlex optional match, convert to regex ()?
-                output += ')?'
-            elif c in '[]{}.+|?':
-                # output regex needs to escape regex metacharacters
-                output += '\\' + c
-            else:
-                # literal output (such as "/")
-                output += c
-        self.regex = output
-        self.translated = True
+            elif isinstance(node, OptionalNode):
+                output += '(' + RegexScribe(node.node_list).translate() + ')?'
+            elif isinstance(node, TagNode):
+                if isinstance(node, MacroTagNode):
+                    regex = self.macro_registry.get(node.macro)
+                elif isinstance(node, RegexTagNode):
+                    regex = node.regex
+                else:
+                    regex = '.+'
+                if node.name:
+                    output += '(?P<%s>%s)' % (node.name, regex)
+                else:
+                    output += regex
         return output
 
-    #alias to translate
-    to_regex = translate
-
-    def match(self, subject):
-        if not self.translated:
-            self.translate()
-        m = re.match(self.regex, subject)
-        if m:
-            return m.groupdict()
-
+def get_all_nodes(node_list):
+    for node in node_list:
+        if isinstance(node, BlockNode):
+            for node in get_all_nodese(BlockNode.node_list):
+                yield node
+        else:
+            yield node

@@ -113,6 +113,68 @@ class TestGrammer(unittest.TestCase):
             ]
         )
 
+class TestRegexScribe(unittest.TestCase):
+    def test_basic(self):
+        node_list = [grammer.TextNode('test')]
+        self.assertEqual(grammer.RegexScribe(node_list).translate(), 'test')
+
+    def test_optional(self):
+        node_list = [
+            grammer.TextNode('required'),
+            grammer.OptionalNode([
+               grammer.TextNode('optional'),
+            ]),
+        ]
+        self.assertEqual(
+            grammer.RegexScribe(node_list).translate(),
+            'required(optional)?'
+        )
+
+    def test_tag(self):
+        node_list = [
+            grammer.TagNode('simple'),
+        ]
+        self.assertEqual(
+            grammer.RegexScribe(node_list).translate(),
+            '(?P<simple>.+)',
+        )
+
+    def test_regex_tag(self):
+        node_list = [
+            grammer.RegexTagNode('simple', '[0-9]{2}'),
+        ]
+        self.assertEqual(
+            grammer.RegexScribe(node_list).translate(),
+            '(?P<simple>[0-9]{2})',
+        )
+
+    def test_uncaptured_regex_tag(self):
+        node_list = [
+            grammer.RegexTagNode('', '[0-9]{2}'),
+        ]
+        self.assertEqual(
+            grammer.RegexScribe(node_list).translate(),
+            '[0-9]{2}',
+        )
+
+    def test_macro_tag(self):
+        node_list = [
+            grammer.MacroTagNode('year', 'Y'),
+        ]
+        self.assertEqual(
+            grammer.RegexScribe(node_list).translate(),
+            r'(?P<year>\d{4})',
+        )
+
+    def test_uncaptured_macro_tag(self):
+        node_list = [
+            grammer.MacroTagNode('', 'Y'),
+        ]
+        self.assertEqual(
+            grammer.RegexScribe(node_list).translate(),
+            r'\d{4}',
+        )
+
 class TestSurlex(unittest.TestCase):
     def setUp(self):
         # matches are pairs of surl expressions and the regex equivalent
