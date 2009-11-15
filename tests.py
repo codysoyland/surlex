@@ -1,7 +1,117 @@
 import unittest
 from surlex import surlex_to_regex as surl, match, register_macro, parsed_surlex_object, Surlex, MacroRegistry
+from surlex import grammer
 from surlex.exceptions import MalformedSurlex, MacroDoesNotExist
 import re
+
+class TestGrammer(unittest.TestCase):
+    def test_parser_simple(self):
+        parser = grammer.Parser('test')
+        self.assertEqual(parser.get_node_list(), [grammer.TextNode('test')])
+
+    def test_parser_simple1(self):
+        self.assertEqual(
+            grammer.Parser(r'a\backslash').get_node_list(),
+            [grammer.TextNode('abackslash')],
+        )
+
+    def test_parser_wildcard_simple(self):
+        parser = grammer.Parser('*')
+        self.assertEqual(parser.get_node_list(), [grammer.WildcardNode()])
+
+    def test_parser_wildcard1(self):
+        self.assertEqual(
+            grammer.Parser('text*').get_node_list(),
+            [grammer.TextNode('text'), grammer.WildcardNode()],
+        )
+
+    def test_parser_wildcard2(self):
+        self.assertEqual(
+            grammer.Parser('*text').get_node_list(),
+            [grammer.WildcardNode(), grammer.TextNode('text')],
+        )
+
+    def test_parser_wildcard3(self):
+        self.assertEqual(
+            grammer.Parser('*text*').get_node_list(),
+            [grammer.WildcardNode(), grammer.TextNode('text'), grammer.WildcardNode()],
+        )
+
+    def test_optional1(self):
+        self.assertEqual(
+            grammer.Parser('required(optional)').get_node_list(),
+            [grammer.TextNode('required'), grammer.OptionalNode([grammer.TextNode('optional')])],
+        )
+
+    def test_optional2(self):
+        self.assertEqual(
+            grammer.Parser('(optional)required').get_node_list(),
+            [grammer.OptionalNode([grammer.TextNode('optional')]), grammer.TextNode('required')],
+        )
+
+    def test_optional_empty(self):
+        self.assertEqual(
+            grammer.Parser('()').get_node_list(),
+            [grammer.OptionalNode([])],
+        )
+
+    def test_optional_multiple(self):
+        self.assertEqual(
+            grammer.Parser('()()').get_node_list(),
+            [grammer.OptionalNode([]), grammer.OptionalNode([])],
+        )
+
+    def test_optional_nested(self):
+        self.assertEqual(
+            grammer.Parser('((text))').get_node_list(),
+            [grammer.OptionalNode([grammer.OptionalNode([grammer.TextNode('text')])])],
+        )
+
+    def test_tag(self):
+        self.assertEqual(
+            grammer.Parser('<test>').get_node_list(),
+            [grammer.TagNode('test')]
+        )
+
+    def test_regex_tag(self):
+        self.assertEqual(
+            grammer.Parser('<test=.*>').get_node_list(),
+            [grammer.RegexTagNode('test', '.*')]
+        )
+
+    def test_macro_tag(self):
+        self.assertEqual(
+            grammer.Parser('<test:m>').get_node_list(),
+            [grammer.MacroTagNode('test', 'm')]
+        )
+
+    def test_unnamed_regex(self):
+        self.assertEqual(
+            grammer.Parser('<=.*>').get_node_list(),
+            [grammer.RegexTagNode('', '.*')]
+        )
+
+    def test_unnamed_macro(self):
+        self.assertEqual(
+            grammer.Parser('<:m>').get_node_list(),
+            [grammer.MacroTagNode('', 'm')]
+        )
+
+    def test_complex(self):
+        self.assertEqual(
+            grammer.Parser('/articles/<id=\d{5}>/<year:Y>/(<slug>/)').get_node_list(),
+            [
+                grammer.TextNode('/articles/'),
+                grammer.RegexTagNode('id', r'\d{5}'),
+                grammer.TextNode('/'),
+                grammer.MacroTagNode('year', 'Y'),
+                grammer.TextNode('/'),
+                grammer.OptionalNode([
+                    grammer.TagNode('slug'),
+                    grammer.TextNode('/'),
+                ]),
+            ]
+        )
 
 class TestSurlex(unittest.TestCase):
     def setUp(self):
