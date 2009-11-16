@@ -91,7 +91,7 @@ Regex tags
     example, the following surlex matches a 5-digit number and assigns
     it to the variable ``zipcode``:
 
-        ``My house is in zip code <zipcode:[0-9]{5}>.``
+        ``My house is in zip code <zipcode=[0-9]{5}>.``
 
     This is equivalent to the following regex:
 
