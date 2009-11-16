@@ -1,7 +1,3 @@
-try:
-    from io import StringIO
-except ImportError:
-    from StringIO import StringIO
 import re
 from exceptions import MalformedSurlex
 from macros import MacroRegistry, DefaultMacroRegistry
