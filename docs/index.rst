@@ -109,3 +109,17 @@ Macro tags
     This is equivalent to the following regex:
 
         ``It is (?P<year>[0-9]{4}).``
+
+========
+Examples
+========
+
+============================    =========================================   =========================   ===========================================
+Surlex                          Regex equivalent                            Matches                     Extraction
+============================    =========================================   =========================   ===========================================
+``/<product>/<option>.html``    ``/(?P<product>.+)/(?P<option>.+)\.html``   ``/shirt/green.html``       ``{'product': 'shirt', 'option': 'green'}``
+``/<product>/<option>.*``       ``/(?P<product>.+)/(?P<option>.+)\..*``     ``/shirt/red.anything``     ``{'product': 'shirt', 'option': 'red'}``
+``/things/edit/<slug:s>/``      ``/things/edit/(?P<slug>[\w-]+)/``          ``/things/edit/thing-1/``   ``{'slug': 'thing-1'}``
+``/real/regex/<=.*$>``          ``/real/regex/.*$``                         ``/real/regex/anything``    ``{}``
+``/blog/(<year:Y>/)``           ``/blog/((?P<year>\d{4})/)?``               ``/blog/2009/``             ``{'year': '2009'}``
+============================    =========================================   =========================   ===========================================
