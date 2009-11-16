@@ -1,4 +1,4 @@
-from grammer import Parser, RegexScribe, get_all_nodes, MacroTagNode
+from grammar import Parser, RegexScribe, get_all_nodes, MacroTagNode
 from macros import MacroRegistry, DefaultMacroRegistry
 import re
 
