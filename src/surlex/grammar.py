@@ -171,7 +171,7 @@ class RegexScribe(object):
 def get_all_nodes(node_list):
     for node in node_list:
         if isinstance(node, BlockNode):
-            for node in get_all_nodes(BlockNode.node_list):
+            for node in get_all_nodes(node.node_list):
                 yield node
         else:
             yield node
