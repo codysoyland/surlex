@@ -102,13 +102,14 @@ class Parser(object):
     def parse(self, chars):
         token = ''
         for char in chars:
+            if char in '<*(':
+                if token:
+                    yield TextNode(token)
+                token = ''
             if char == '\\':
                 # escape with backslash
                 token += chars.next()
             elif char == '<':
-                if token:
-                    yield TextNode(token)
-                token = ''
                 tag_content = self.read_until(chars, '>')
                 name = ''
                 regex = None
@@ -128,14 +129,8 @@ class Parser(object):
                     yield TagNode(tag_content)
             elif char == '*':
                 # wildcard
-                if token:
-                    yield TextNode(token)
-                token = ''
                 yield WildcardNode()
             elif char == '(':
-                if token:
-                    yield TextNode(token)
-                token = ''
                 yield OptionalNode(list(self.parse(chars)))
             elif char == ')':
                 # end of node list, stop parsing
