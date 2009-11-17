@@ -174,3 +174,28 @@ Surlex                          Regex equivalent                            Matc
 ``/real/regex/<=.*$>``          ``/real/regex/.*$``                         ``/real/regex/anything``    ``{}``
 ``/blog/(<year:Y>/)``           ``/blog/((?P<year>\d{4})/)?``               ``/blog/2009/``             ``{'year': '2009'}``
 ============================    =========================================   =========================   ===========================================
+
+
+Python API
+==========
+
+The Surlex class exposes most of module's functionality. It is initialized
+with a surlex expression:
+
+    >>> from surlex import Surlex
+    >>> surlex = Surlex('/articles/<year:Y>/<slug:s>/(<page:#>/)')
+
+The equivalent regex is generated in the to_regex property.
+
+    >>> print surlex.to_regex
+    /articles/(?P<year>\d{4})/(?P<slug>[\w-]+)/((?P<page>\d+)/)?
+
+To match a given URL against the surlex object, run Surlex.match:
+
+    >>> print surlex.match('/articles/2009/people-like-simplicity/3/')
+    {'year': '2009', 'page': '3', 'slug': 'people-like-simplicity'}
+
+The full parse tree is available for additional hacking at surlex.node_list:
+
+    >>> print surlex.node_list
+    [<TextNode "/articles/">, <MacroTagNode year: Y>, <TextNode "/">, <MacroTagNode slug: s>, <TextNode "/">, <OptionalNode: [<MacroTagNode page: #>, <TextNode "/">]>]
