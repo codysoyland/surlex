@@ -117,11 +117,15 @@ Simple tags
     A simple tag contains a variable name between angle brackets. For
     example, the simple tag ``<name>`` is used the the following surlex:
 
-        ``My name is <name>.``
+        ::
+
+            My name is <name>.
 
     This is equivalent to the following regex:
 
-        ``My name is (?P<name>.+)\.``
+        ::
+
+            My name is (?P<name>.+)\.
 
 Regex tags
 ----------
@@ -130,11 +134,15 @@ Regex tags
     example, the following surlex matches a 5-digit number and assigns
     it to the variable ``zipcode``:
 
-        ``My house is in zip code <zipcode=[0-9]{5}>.``
+        ::
+
+            My house is in zip code <zipcode=[0-9]{5}>.
 
     This is equivalent to the following regex:
 
-        ``My house is in zip code (?P<zipcode>[0-9]{5})\.``
+        ::
+
+            My house is in zip code (?P<zipcode>[0-9]{5})\.
 
 Macro tags
 ----------
@@ -143,11 +151,15 @@ Macro tags
     the following surlex matches a 4-digit year and assigns it to the
     variable ``year``:
 
-        ``It is <year:Y>.``
+        ::
+
+            It is <year:Y>.
 
     This is equivalent to the following regex:
 
-        ``It is (?P<year>[0-9]{4}).``
+        ::
+
+            It is (?P<year>[0-9]{4}).
 
 --------
 Examples
