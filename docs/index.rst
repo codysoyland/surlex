@@ -176,8 +176,9 @@ Surlex                          Regex equivalent                            Matc
 ============================    =========================================   =========================   ===========================================
 
 
+----------
 Python API
-==========
+----------
 
 The Surlex class exposes most of module's functionality. It is initialized
 with a surlex expression:
