@@ -1,177 +1,177 @@
 import unittest
 from surlex import surlex_to_regex as surl, match, register_macro, parsed_surlex_object, Surlex, MacroRegistry
-from surlex import grammer
+from surlex import grammar
 from surlex.exceptions import MalformedSurlex, MacroDoesNotExist
 import re
 
 class TestGrammer(unittest.TestCase):
     def test_parser_simple(self):
-        parser = grammer.Parser('test')
-        self.assertEqual(parser.get_node_list(), [grammer.TextNode('test')])
+        parser = grammar.Parser('test')
+        self.assertEqual(parser.get_node_list(), [grammar.TextNode('test')])
 
     def test_parser_simple1(self):
         self.assertEqual(
-            grammer.Parser(r'a\backslash').get_node_list(),
-            [grammer.TextNode('abackslash')],
+            grammar.Parser(r'a\backslash').get_node_list(),
+            [grammar.TextNode('abackslash')],
         )
 
     def test_parser_wildcard_simple(self):
-        parser = grammer.Parser('*')
-        self.assertEqual(parser.get_node_list(), [grammer.WildcardNode()])
+        parser = grammar.Parser('*')
+        self.assertEqual(parser.get_node_list(), [grammar.WildcardNode()])
 
     def test_parser_wildcard1(self):
         self.assertEqual(
-            grammer.Parser('text*').get_node_list(),
-            [grammer.TextNode('text'), grammer.WildcardNode()],
+            grammar.Parser('text*').get_node_list(),
+            [grammar.TextNode('text'), grammar.WildcardNode()],
         )
 
     def test_parser_wildcard2(self):
         self.assertEqual(
-            grammer.Parser('*text').get_node_list(),
-            [grammer.WildcardNode(), grammer.TextNode('text')],
+            grammar.Parser('*text').get_node_list(),
+            [grammar.WildcardNode(), grammar.TextNode('text')],
         )
 
     def test_parser_wildcard3(self):
         self.assertEqual(
-            grammer.Parser('*text*').get_node_list(),
-            [grammer.WildcardNode(), grammer.TextNode('text'), grammer.WildcardNode()],
+            grammar.Parser('*text*').get_node_list(),
+            [grammar.WildcardNode(), grammar.TextNode('text'), grammar.WildcardNode()],
         )
 
     def test_optional1(self):
         self.assertEqual(
-            grammer.Parser('required(optional)').get_node_list(),
-            [grammer.TextNode('required'), grammer.OptionalNode([grammer.TextNode('optional')])],
+            grammar.Parser('required(optional)').get_node_list(),
+            [grammar.TextNode('required'), grammar.OptionalNode([grammar.TextNode('optional')])],
         )
 
     def test_optional2(self):
         self.assertEqual(
-            grammer.Parser('(optional)required').get_node_list(),
-            [grammer.OptionalNode([grammer.TextNode('optional')]), grammer.TextNode('required')],
+            grammar.Parser('(optional)required').get_node_list(),
+            [grammar.OptionalNode([grammar.TextNode('optional')]), grammar.TextNode('required')],
         )
 
     def test_optional_empty(self):
         self.assertEqual(
-            grammer.Parser('()').get_node_list(),
-            [grammer.OptionalNode([])],
+            grammar.Parser('()').get_node_list(),
+            [grammar.OptionalNode([])],
         )
 
     def test_optional_multiple(self):
         self.assertEqual(
-            grammer.Parser('()()').get_node_list(),
-            [grammer.OptionalNode([]), grammer.OptionalNode([])],
+            grammar.Parser('()()').get_node_list(),
+            [grammar.OptionalNode([]), grammar.OptionalNode([])],
         )
 
     def test_optional_nested(self):
         self.assertEqual(
-            grammer.Parser('((text))').get_node_list(),
-            [grammer.OptionalNode([grammer.OptionalNode([grammer.TextNode('text')])])],
+            grammar.Parser('((text))').get_node_list(),
+            [grammar.OptionalNode([grammar.OptionalNode([grammar.TextNode('text')])])],
         )
 
     def test_tag(self):
         self.assertEqual(
-            grammer.Parser('<test>').get_node_list(),
-            [grammer.TagNode('test')]
+            grammar.Parser('<test>').get_node_list(),
+            [grammar.TagNode('test')]
         )
 
     def test_regex_tag(self):
         self.assertEqual(
-            grammer.Parser('<test=.*>').get_node_list(),
-            [grammer.RegexTagNode('test', '.*')]
+            grammar.Parser('<test=.*>').get_node_list(),
+            [grammar.RegexTagNode('test', '.*')]
         )
 
     def test_macro_tag(self):
         self.assertEqual(
-            grammer.Parser('<test:m>').get_node_list(),
-            [grammer.MacroTagNode('test', 'm')]
+            grammar.Parser('<test:m>').get_node_list(),
+            [grammar.MacroTagNode('test', 'm')]
         )
 
     def test_unnamed_regex(self):
         self.assertEqual(
-            grammer.Parser('<=.*>').get_node_list(),
-            [grammer.RegexTagNode('', '.*')]
+            grammar.Parser('<=.*>').get_node_list(),
+            [grammar.RegexTagNode('', '.*')]
         )
 
     def test_unnamed_macro(self):
         self.assertEqual(
-            grammer.Parser('<:m>').get_node_list(),
-            [grammer.MacroTagNode('', 'm')]
+            grammar.Parser('<:m>').get_node_list(),
+            [grammar.MacroTagNode('', 'm')]
         )
 
     def test_complex(self):
         self.assertEqual(
-            grammer.Parser('/articles/<id=\d{5}>/<year:Y>/(<slug>/)').get_node_list(),
+            grammar.Parser('/articles/<id=\d{5}>/<year:Y>/(<slug>/)').get_node_list(),
             [
-                grammer.TextNode('/articles/'),
-                grammer.RegexTagNode('id', r'\d{5}'),
-                grammer.TextNode('/'),
-                grammer.MacroTagNode('year', 'Y'),
-                grammer.TextNode('/'),
-                grammer.OptionalNode([
-                    grammer.TagNode('slug'),
-                    grammer.TextNode('/'),
+                grammar.TextNode('/articles/'),
+                grammar.RegexTagNode('id', r'\d{5}'),
+                grammar.TextNode('/'),
+                grammar.MacroTagNode('year', 'Y'),
+                grammar.TextNode('/'),
+                grammar.OptionalNode([
+                    grammar.TagNode('slug'),
+                    grammar.TextNode('/'),
                 ]),
             ]
         )
 
 class TestRegexScribe(unittest.TestCase):
     def test_basic(self):
-        node_list = [grammer.TextNode('test')]
-        self.assertEqual(grammer.RegexScribe(node_list).translate(), 'test')
+        node_list = [grammar.TextNode('test')]
+        self.assertEqual(grammar.RegexScribe(node_list).translate(), 'test')
 
     def test_optional(self):
         node_list = [
-            grammer.TextNode('required'),
-            grammer.OptionalNode([
-               grammer.TextNode('optional'),
+            grammar.TextNode('required'),
+            grammar.OptionalNode([
+               grammar.TextNode('optional'),
             ]),
         ]
         self.assertEqual(
-            grammer.RegexScribe(node_list).translate(),
+            grammar.RegexScribe(node_list).translate(),
             'required(optional)?'
         )
 
     def test_tag(self):
         node_list = [
-            grammer.TagNode('simple'),
+            grammar.TagNode('simple'),
         ]
         self.assertEqual(
-            grammer.RegexScribe(node_list).translate(),
+            grammar.RegexScribe(node_list).translate(),
             '(?P<simple>.+)',
         )
 
     def test_regex_tag(self):
         node_list = [
-            grammer.RegexTagNode('simple', '[0-9]{2}'),
+            grammar.RegexTagNode('simple', '[0-9]{2}'),
         ]
         self.assertEqual(
-            grammer.RegexScribe(node_list).translate(),
+            grammar.RegexScribe(node_list).translate(),
             '(?P<simple>[0-9]{2})',
         )
 
     def test_uncaptured_regex_tag(self):
         node_list = [
-            grammer.RegexTagNode('', '[0-9]{2}'),
+            grammar.RegexTagNode('', '[0-9]{2}'),
         ]
         self.assertEqual(
-            grammer.RegexScribe(node_list).translate(),
+            grammar.RegexScribe(node_list).translate(),
             '[0-9]{2}',
         )
 
     def test_macro_tag(self):
         node_list = [
-            grammer.MacroTagNode('year', 'Y'),
+            grammar.MacroTagNode('year', 'Y'),
         ]
         self.assertEqual(
-            grammer.RegexScribe(node_list).translate(),
+            grammar.RegexScribe(node_list).translate(),
             r'(?P<year>\d{4})',
         )
 
     def test_uncaptured_macro_tag(self):
         node_list = [
-            grammer.MacroTagNode('', 'Y'),
+            grammar.MacroTagNode('', 'Y'),
         ]
         self.assertEqual(
-            grammer.RegexScribe(node_list).translate(),
+            grammar.RegexScribe(node_list).translate(),
             r'\d{4}',
         )
 
