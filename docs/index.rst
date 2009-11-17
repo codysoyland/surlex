@@ -9,11 +9,41 @@ Surlex Documentation
 
 Welcome to the surlex documentation.
 
-Surlex is a pattern-matching domain specific language useful for capturing
-structured data using regular expressions and pre-defined macros. It can be
-described as a language embracing a subset of regex features, but designed
-for syntactic clarity.
+Surlex is domain specific language designed for pattern matching and data
+capturing using a minimal syntax. It is similar in concept to regex and is,
+in fact, a regex generator. It can be described as a language embracing and
+simplifying a subset of the features of regular expressions, keeping the
+power of regex available, but prioritizing syntactic clarity.
 
+------
+Basics
+------
+
+Surlex was originally designed for matching URLs. Consider the following surlex
+that matches a URL:
+
+::
+
+    /articles/<year:Y>/<slug:s>/(<page:#>/)
+
+This surlex would match the following URL:
+
+::
+
+    /articles/2009/people-like-simplicity/3/
+
+This match would produce the following data dictionary:
+
+::
+
+    {
+        'year': '2009',
+        'slug': 'people-like-simplicity',
+        'page': '3',
+    }
+
+The page number is optional, so if it was left off the URL, the surlex would
+still match the URL, but only extract the year and slug.
 
 ------
 Syntax
@@ -27,15 +57,15 @@ This syntax diagram describes the entirety of surlex syntax:
 The syntax of surlex is minimalistic and intended to provide the most concise
 form possible for the extraction of named patterns.
 
+
 Like regular expressions, surlex expressions will match a given input based
 on two things: normal characters and specialized metacharacters.
 
 Normal Characters
 =================
 Normal characters such as alphanumeric characters will match the input
-string just like a simple search. This means that the surlex ``Cody``
-will match the input string ``I am Cody.``
-
+string just like a simple search. This means that the surlex ``surlex``
+will match the input string ``Maybe surlex can do that.``
 
 Specialized Metacharacters
 ==========================
@@ -44,34 +74,43 @@ Certain characters have special meaning in a surlex expression.
 Caret (``^``)
 -------------
     A caret at the beginning of the surlex expression makes the surlex
-    only match the beginning of the input string. This means that
-    ``^Cody`` will match ``Cody wrote surlex.`` but not ``His name
-    is Cody.``
+    only match the beginning of the input string. For example, ``^surlex``
+    will match ``surlex finds slugs.`` but not ``Slugs will be found by
+    surlex``. This is the same behavior that regex provides.
 
 Dollar Sign (``$``)
 -------------------
-    A dollar sign at the end of the surlex expression makes the surlex
-    only match the end of the input string. This means that ``Cody.$``
-    will match ``Surlex was written by Cody.`` but ``Cody was his
-    name``.
+    A dollar sign at the end of a phrase has exactly the opposite effect
+    as a caret; it will only match the end of the input string. This means
+    that ``Surlex.$`` will match ``I found this thing called Surlex.`` but
+    not ``Surlex might have no use case.``.
+
+Asterisk (``*``)
+----------------
+    An asterisk is a standard wildcard; it will match anything. It is the
+    same as regex ``.*``.
 
 Parentheses (``(`` and ``)``)
 -----------------------------
     By wrapping a section of a surlex expression in parentheses,
     you are marking a section of the pattern as `optional`, so
     it is not required to match. It is equivalent to wrapping a regex
-    in ``()?``.
+    in ``(`` and ``)?``.
 
 Angle Brackets (``<`` and ``>``)
 --------------------------------
     A pair of angle brackets containing some text is called a `surlex
-    tag` and is handled specially. Such tags are the main feature
-    of surlex.
+    tag` and is handled specially. These tags are the most important
+    feature of surlex in terms of it's pattern-matching capabilities.
 
 Surlex Tags
 ===========
 Surlex tags are are special pattern-matching objects that fall into three
 categories:
+
+    - Simple tags
+    - Regex tags
+    - Macro tags
 
 Simple tags
 -----------
@@ -115,7 +154,7 @@ Examples
 --------
 
 ============================    =========================================   =========================   ===========================================
-Surlex                          Regex equivalent                            Matches                     Extraction
+Surlex                          Regex equivalent                            Matches                     Extracts
 ============================    =========================================   =========================   ===========================================
 ``/<product>/<option>.html``    ``/(?P<product>.+)/(?P<option>.+)\.html``   ``/shirt/green.html``       ``{'product': 'shirt', 'option': 'green'}``
 ``/<product>/<option>.*``       ``/(?P<product>.+)/(?P<option>.+)\..*``     ``/shirt/red.anything``     ``{'product': 'shirt', 'option': 'red'}``
