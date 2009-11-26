@@ -11,7 +11,7 @@ def main():
     else:
         argv = sys.argv[1:]
     options, args = parser.parse_args(argv)
-    print Surlex(args[0]).translate()
+    print (Surlex(args[0]).translate())
 
 if __name__ == '__main__':
     main()

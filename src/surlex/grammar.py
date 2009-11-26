@@ -1,6 +1,14 @@
 import re
-from exceptions import MalformedSurlex
-from macros import MacroRegistry, DefaultMacroRegistry
+from .exceptions import MalformedSurlex
+from .macros import MacroRegistry, DefaultMacroRegistry
+
+# Define the next function for python 2 and 3 compatibility
+try:
+    if next:
+        pass
+except NameError:
+    def next(iterable):
+        return iterable.next()
 
 class Node(object):
     pass
@@ -84,18 +92,18 @@ class Parser(object):
 
     def read_until(self, chars, char):
         try:
-            next_char = chars.next()
+            next_char = next(chars)
         except StopIteration:
             raise MalformedSurlex('Malformed surlex. Expected %s.' % char)
         if next_char == char:
             return ''
         if next_char == '\\':
             # only escape what we are looking for
-            next = chars.next()
-            if next == char:
-                return next + self.read_until(chars, char)
+            escaped_char = next(chars)
+            if escaped_char == char:
+                return escaped_char + self.read_until(chars, char)
             else:
-                return '\\' + next + self.read_until(chars, char)
+                return '\\' + escaped_char + self.read_until(chars, char)
         else:
             return next_char + self.read_until(chars, char)
 
@@ -108,7 +116,7 @@ class Parser(object):
                 token = ''
             if char == '\\':
                 # escape with backslash
-                token += chars.next()
+                token += next(chars)
             elif char == '<':
                 tag_content = self.read_until(chars, '>')
                 name = ''
