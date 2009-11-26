@@ -22,13 +22,11 @@ class DefaultMacroRegistry(MacroRegistry):
 
     def __init__(self):
         super(DefaultMacroRegistry, self).__init__({
-            # todo: make regexes more restrictive
-            # (ie: 'm' should only match months 1-12. currently, it matches 0-99)
             'Y': r'\d{4}', # year, including century
             'y': r'\d{2}', # year, not including century
             'M': r'(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)', # month, abbreviated
-            'm': r'\d{1,2}', # month, 1 or 2 digit
-            'd': r'\d{1,2}', # day, 1 or 2 digit
+            'm': r'(0?([1-9])|10|11|12)', # month, 1 or 2 digit
+            'd': r'((0|1|2)?([1-9])|[1-3]0|31)', # day, 1 or 2 digit
             '#': r'\d+', # number, any length
             's': r'[\w-]+', # slug
         })
