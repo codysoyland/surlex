@@ -1,6 +1,11 @@
-from setuptools import setup
+try:
+    from setuptools import setup
+    installer = 'setuptools'
+except ImportError:
+    from distutils.core import setup
+    installer = 'distutils'
 
-setup(
+options = dict(
     name = 'surlex',
     version = '0.1.1',
     description = 'Simple URL expression translator: alternative to regular expressions for URL pattern matching and data extraction.',
@@ -10,7 +15,6 @@ setup(
     package_dir = {'surlex': 'src/surlex'},
     scripts = ['scripts/surlex2regex.py'],
     author = 'Cody Soyland',
-    test_suite = 'tests',
     author_email = 'codysoyland@gmail.com',
     license = 'BSD',
     classifiers = [
@@ -21,3 +25,8 @@ setup(
         'Programming Language :: Python',
     ]
 )
+
+if installer == 'setuptools':
+    options['test_suite'] = 'tests'
+
+setup(**options)
