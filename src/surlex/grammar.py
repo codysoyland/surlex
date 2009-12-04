@@ -1,6 +1,6 @@
 import re
-from .exceptions import MalformedSurlex
-from .macros import MacroRegistry, DefaultMacroRegistry
+from surlex.exceptions import MalformedSurlex
+from surlex.macros import MacroRegistry, DefaultMacroRegistry
 
 # Define the next function for python 2 and 3 compatibility
 try:

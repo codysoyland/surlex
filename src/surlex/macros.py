@@ -1,4 +1,4 @@
-from .exceptions import MacroDoesNotExist
+from surlex.exceptions import MacroDoesNotExist
 
 class MacroRegistry(object):
     macros = {}

@@ -1,5 +1,5 @@
-from .grammar import Parser, RegexScribe, get_all_nodes, MacroTagNode
-from .macros import MacroRegistry, DefaultMacroRegistry
+from surlex.grammar import Parser, RegexScribe, get_all_nodes, MacroTagNode
+from surlex.macros import MacroRegistry, DefaultMacroRegistry
 import re
 
 class Surlex(object):
