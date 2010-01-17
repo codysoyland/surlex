@@ -85,7 +85,7 @@ class MacroTagNode(TagNode):
 class Parser(object):
     def __init__(self, surlex):
         self.surlex = surlex
-        self.chars = (char for char in surlex)
+        self.chars = iter(surlex)
 
     def get_node_list(self):
         return list(self.parse(self.chars))
