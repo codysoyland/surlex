@@ -29,6 +29,7 @@ class DefaultMacroRegistry(MacroRegistry):
             'd': r'((0|1|2)?([1-9])|[1-3]0|31)', # day, 1 or 2 digit
             '#': r'\d+', # number, any length
             's': r'[\w-]+', # slug
+            'u': r'[a-fA-F0-9]{8}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{12}', # uuid
         })
 
     @classmethod
