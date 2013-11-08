@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/codysoyland/surlex.png?branch=master
+    :target: https://travis-ci.org/codysoyland/surlex
+
 Surlex (Simple URL Expression) is a language for matching and extracting text, similar to regex (regular expression). It works by generating a regular expression from a more concise syntax that is designed to produce easy-to-read url patterns.
 
 Documentation is available as RestructuredText in the "docs" directory. HTML documentation is at:
